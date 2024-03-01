@@ -3,12 +3,12 @@ package com.kislun.testtask.model.report.date;
 import lombok.Data;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.time.LocalDate;
+import java.util.Date;
 
 @Data
 @Document
 public class SalesAndTrafficByDate {
-    private LocalDate localDate;
+    private Date date;
     private SalesByDate salesByDate;
     private TrafficByDate trafficByDate;
 }
