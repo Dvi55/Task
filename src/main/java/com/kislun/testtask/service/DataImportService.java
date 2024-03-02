@@ -25,7 +25,9 @@ public class DataImportService {
     private final SalesAndTrafficAsinRepository salesAndTrafficAsinRepository;
     private final SalesAndTrafficDateRepository salesAndTrafficDateRepository;
 
-    public DataImportService(ReportSpecificationRepository reportSpecificationRepository, SalesAndTrafficAsinRepository salesAndTrafficAsinRepository, SalesAndTrafficDateRepository salesAndTrafficDateRepository) {
+    public DataImportService(ReportSpecificationRepository reportSpecificationRepository,
+                             SalesAndTrafficAsinRepository salesAndTrafficAsinRepository,
+                             SalesAndTrafficDateRepository salesAndTrafficDateRepository) {
         this.reportSpecificationRepository = reportSpecificationRepository;
         this.salesAndTrafficAsinRepository = salesAndTrafficAsinRepository;
         this.salesAndTrafficDateRepository = salesAndTrafficDateRepository;
@@ -40,13 +42,10 @@ public class DataImportService {
 
         try {
             SalesAndTrafficReport report = objectMapper.readValue(new File(pathFile), SalesAndTrafficReport.class);
-            ReportSpecification reportSpecification = report.getReportSpecification();
-            List<SalesAndTrafficByDate> salesAndTrafficByDates = report.getSalesAndTrafficByDate();
-            List<SalesAndTrafficByAsin> salesAndTrafficByAsins = report.getSalesAndTrafficByAsin();
-            reportSpecificationRepository.save(reportSpecification);
-            salesAndTrafficAsinRepository.saveAll(salesAndTrafficByAsins);
-            salesAndTrafficDateRepository.saveAll(salesAndTrafficByDates);
-           log.info("Data imported");
+            reportSpecificationRepository.save(report.getReportSpecification());
+            salesAndTrafficAsinRepository.saveAll(report.getSalesAndTrafficByAsin());
+            salesAndTrafficDateRepository.saveAll(report.getSalesAndTrafficByDate());
+            log.info("Data imported");
         } catch (IOException e) {
             log.info("Error import data");
             e.printStackTrace();
@@ -64,17 +63,19 @@ public class DataImportService {
         List<SalesAndTrafficByDate> salesAndTrafficByDateList = salesAndTrafficDateRepository.findAll();
         try {
             SalesAndTrafficReport report = objectMapper.readValue(new File(pathFile), SalesAndTrafficReport.class);
+            reportSpecificationRepository.deleteAll(reportSpecificationList);
             reportSpecificationRepository.save(report.getReportSpecification());
+            salesAndTrafficAsinRepository.deleteAll(salesAndTrafficByAsinList);
             salesAndTrafficAsinRepository.saveAll(report.getSalesAndTrafficByAsin());
+            salesAndTrafficDateRepository.deleteAll(salesAndTrafficByDateList);
             salesAndTrafficDateRepository.saveAll(report.getSalesAndTrafficByDate());
             log.info("Data updated");
         } catch (IOException e) {
             log.info("Error update data");
             e.printStackTrace();
         }
-        reportSpecificationRepository.deleteAll(reportSpecificationList);
-        salesAndTrafficAsinRepository.deleteAll(salesAndTrafficByAsinList);
-        salesAndTrafficDateRepository.deleteAll(salesAndTrafficByDateList);
+
+
     }
 }
 
